@@ -28,7 +28,7 @@ not a fork, not a feature clone. Simple and optimized: only `remember` and
 | Graph store | SQLite, single `.db` file | Zero infra, ships in the plugin |
 | Retrieval | Semantic + graph hop | Matches Cognee's hybrid; best recall |
 | LLM (extraction) | Claude API (`anthropic`) | — |
-| Embeddings | Voyage AI (pluggable) | One API key, no `torch`; local swap later |
+| Embeddings | Local `sentence-transformers` (pluggable) | Zero cost, fully offline/self-hosted, no extra API key |
 
 ## Architecture
 
@@ -59,7 +59,7 @@ graph is large; add sqlite-vec if scan is measurably slow.
 **remember(text):**
 1. Chunk text into tunable-size units.
 2. One Claude call per chunk → `[(subject, relation, object)]` triples.
-3. Embed each distinct entity (Voyage).
+3. Embed each distinct entity (local `sentence-transformers`).
 4. Upsert nodes + insert edges into SQLite.
 
 **recall(query):**
@@ -92,11 +92,14 @@ get a check. API calls (Claude, Voyage) are the only mocked/optional boundary.
 
 ## Config
 
-- `ANTHROPIC_API_KEY`, `VOYAGE_API_KEY` — env vars.
+- `ANTHROPIC_API_KEY` — env var (only key needed; embeddings run locally).
+- Embedding model — defaults to `BAAI/bge-small-en-v1.5` (or `all-MiniLM-L6-v2`),
+  downloaded once by `sentence-transformers`; overridable via constant.
 - DB path — defaults to `~/.ormayundo/memory.db`, overridable.
 - Chunk size, top-k, hop depth — module constants, tuned later per the paper's
   chunking/retrieval knobs.
 
 ## Open questions
 
-None blocking. Embedding provider is pluggable if Voyage proves unsuitable.
+None blocking. The embedding layer is behind a single `embed(texts) -> vectors`
+interface, so the model (or a hosted provider) is a one-line swap if needed.
