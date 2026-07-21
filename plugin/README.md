@@ -10,8 +10,9 @@ Registers the Ormayundo MCP server so Claude gains `remember` / `recall` tools.
    ```
 2. Set the one required credential (embeddings run locally — no second key):
    ```
-   export ANTHROPIC_API_KEY=sk-ant-...
+   export OPENAI_API_KEY=sk-...
    ```
+   Or put `OPENAI_API_KEY=sk-...` in a `.env` file — it's loaded automatically.
 3. Optional — override where the graph lives (default `~/.ormayundo/memory.db`):
    ```
    export ORMAYUNDO_DB=/path/to/memory.db

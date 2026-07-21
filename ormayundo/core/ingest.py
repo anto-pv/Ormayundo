@@ -1,7 +1,7 @@
 """remember(text): chunk -> Claude extracts triples -> embed entities -> store."""
 import json
 
-from ..config import ANTHROPIC_API_KEY, CHUNK_CHARS, DB_PATH, EXTRACT_MODEL
+from ..config import CHUNK_CHARS, DB_PATH, EXTRACT_MODEL, OPENAI_API_KEY
 from .embed import embed
 from .store import Store
 
@@ -39,14 +39,15 @@ def _chunk(text, size=CHUNK_CHARS):
 
 
 def _extract_triples(chunk, client):
-    resp = client.messages.create(
+    resp = client.chat.completions.create(
         model=EXTRACT_MODEL,
-        max_tokens=8000,
-        output_config={"format": {"type": "json_schema", "schema": _TRIPLE_SCHEMA}},
         messages=[{"role": "user", "content": _PROMPT.format(chunk=chunk)}],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {"name": "triples", "strict": True, "schema": _TRIPLE_SCHEMA},
+        },
     )
-    text = next((b.text for b in resp.content if b.type == "text"), "{}")
-    return parse_triples(text)
+    return parse_triples(resp.choices[0].message.content or "{}")
 
 
 def parse_triples(raw):
@@ -67,8 +68,8 @@ def parse_triples(raw):
 
 def remember(text, db_path=None):
     """Ingest text into the knowledge graph. Returns the number of triples stored."""
-    import anthropic
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    from openai import OpenAI
+    client = OpenAI(api_key=OPENAI_API_KEY)
     store = Store(db_path or DB_PATH)
 
     all_triples = []

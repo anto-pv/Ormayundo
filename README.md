@@ -50,10 +50,11 @@ ingest  →  chunk  →  extract entities & relations  →  knowledge graph  →
 
 ```bash
 pip install ormayundo          # or: pip install -e .  (from a clone)
-export ANTHROPIC_API_KEY=sk-ant-...   # the only key needed — embeddings run locally
+export OPENAI_API_KEY=sk-...    # the only key needed — embeddings run locally
 ```
 
-First use downloads the local embedding model (`BAAI/bge-small-en-v1.5`) once.
+Or put `OPENAI_API_KEY=sk-...` in a `.env` file at your project root — it's loaded
+automatically. First use downloads the local embedding model (`BAAI/bge-small-en-v1.5`) once.
 
 ## Use it as a library
 
@@ -91,10 +92,12 @@ Or install the bundled plugin in [`plugin/`](plugin/).
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `ANTHROPIC_API_KEY` | — (required) | Claude API key for entity/relation extraction |
+| `OPENAI_API_KEY` | — (required) | OpenAI API key for entity/relation extraction |
+| `OPENAI_MODEL` | `gpt-5.5` | Extraction model |
 | `ORMAYUNDO_DB` | `~/.ormayundo/memory.db` | Graph storage location |
-| `ORMAYUNDO_MODEL` | `claude-opus-4-8` | Extraction model |
 | `ORMAYUNDO_EMBED_MODEL` | `BAAI/bge-small-en-v1.5` | Local embedding model |
+
+Config is read from the environment or a `.env` file (loaded automatically).
 
 ## Status
 

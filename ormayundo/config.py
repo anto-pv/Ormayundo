@@ -1,11 +1,15 @@
 import os
 from pathlib import Path
 
-# Only credential needed — embeddings run locally.
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
+from dotenv import load_dotenv
 
-# Claude model used for entity/relation extraction.
-EXTRACT_MODEL = os.environ.get("ORMAYUNDO_MODEL", "claude-opus-4-8")
+load_dotenv()  # read a local .env (walks up from cwd) into the environment
+
+# Only credential needed — embeddings run locally.
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+# OpenAI model used for entity/relation extraction.
+EXTRACT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.5")
 
 # Local embedding model (downloaded once by sentence-transformers).
 EMBED_MODEL = os.environ.get("ORMAYUNDO_EMBED_MODEL", "BAAI/bge-small-en-v1.5")
