@@ -1,0 +1,6 @@
+{
+  "name": "ormayundo",
+  "description": "Persistent long-term memory for agents via a self-hosted knowledge graph. Adds `remember` and `recall` tools.",
+  "version": "0.1.0",
+  "author": { "name": "anto-pv" }
+}

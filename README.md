@@ -46,6 +46,56 @@ ingest  →  chunk  →  extract entities & relations  →  knowledge graph  →
 4. **Store** them in a self-hosted graph (your infra, your data).
 5. **Retrieve** connected context on demand — multi-hop, not just nearest-neighbor.
 
+## Install
+
+```bash
+pip install ormayundo          # or: pip install -e .  (from a clone)
+export ANTHROPIC_API_KEY=sk-ant-...   # the only key needed — embeddings run locally
+```
+
+First use downloads the local embedding model (`BAAI/bge-small-en-v1.5`) once.
+
+## Use it as a library
+
+```python
+from ormayundo import remember, recall
+
+remember("Ada Lovelace wrote the first algorithm for Charles Babbage's Analytical Engine.")
+print(recall("Who worked on the Analytical Engine?"))
+# Relevant memories for: Ada Lovelace, Analytical Engine
+# - Ada Lovelace wrote first algorithm for Analytical Engine
+# - Charles Babbage designed Analytical Engine
+```
+
+## Use it from Claude (MCP)
+
+Run the MCP server (stdio):
+
+```bash
+ormayundo-mcp
+```
+
+It exposes two tools — `remember(text)` and `recall(query)` — backed by one SQLite
+file at `~/.ormayundo/memory.db` (override with `ORMAYUNDO_DB`). Because the graph is
+on disk, memories persist across restarts and sessions.
+
+To register it with Claude Code, add to your `.mcp.json`:
+
+```json
+{ "mcpServers": { "ormayundo": { "command": "ormayundo-mcp" } } }
+```
+
+Or install the bundled plugin in [`plugin/`](plugin/).
+
+## Configuration
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `ANTHROPIC_API_KEY` | — (required) | Claude API key for entity/relation extraction |
+| `ORMAYUNDO_DB` | `~/.ormayundo/memory.db` | Graph storage location |
+| `ORMAYUNDO_MODEL` | `claude-opus-4-8` | Extraction model |
+| `ORMAYUNDO_EMBED_MODEL` | `BAAI/bge-small-en-v1.5` | Local embedding model |
+
 ## Status
 
 Early stage. Interfaces and layout will change.

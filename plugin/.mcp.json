@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "ormayundo": {
+      "command": "ormayundo-mcp",
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
+      }
+    }
+  }
+}
