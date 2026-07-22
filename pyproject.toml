@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/anto-pv/Ormayundo"
+Homepage = "https://anto-pv.github.io/Ormayundo"
 Repository = "https://github.com/anto-pv/Ormayundo"
 
 [project.scripts]
