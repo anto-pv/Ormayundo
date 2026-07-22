@@ -22,4 +22,4 @@ openspec
 *.tar.br
 *.tar.gz.br
 *.tar.gz.zst
-*.tar.gz.br.claude/
+.claude/
