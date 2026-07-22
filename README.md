@@ -111,6 +111,10 @@ Config is read from the environment or a `.env` file (loaded automatically).
 
 Early stage. Interfaces and layout will change.
 
+## Contributing
+
+Issues and focused PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## License
 
-TBD.
+[MIT](LICENSE) © anto-pv
