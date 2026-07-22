@@ -12,10 +12,6 @@
   <a href="https://anto-pv.github.io/Ormayundo"><strong>🌐 anto-pv.github.io/Ormayundo</strong></a>
 </p>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/anto-pv/Ormayundo/main/assets/ormayundo-demo.gif" alt="Ormayundo remember/recall demo" width="680">
-</p>
-
 ---
 
 ## What is this?

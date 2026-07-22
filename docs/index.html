@@ -516,30 +516,30 @@
       </div>
       <div class="demo-stage">
         <svg id="demo-svg" viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" aria-label="Animated knowledge graph demo">
-          <!-- edges -->
-          <line id="e-ada"     class="gedge" x1="150" y1="95"  x2="375" y2="175" />
-          <line id="e-babbage" class="gedge" x1="150" y1="255" x2="375" y2="175" />
-          <line id="e-london"  class="gedge" x1="375" y1="175" x2="585" y2="100" />
+          <!-- edges (linear chain) -->
+          <line id="e-1" class="gedge" x1="120" y1="115" x2="300" y2="180" />
+          <line id="e-2" class="gedge" x1="300" y1="180" x2="460" y2="110" />
+          <line id="e-3" class="gedge" x1="460" y1="110" x2="585" y2="205" />
           <!-- edge labels -->
-          <text id="l-ada"     class="gelabel" x="250" y="128" text-anchor="middle">leads</text>
-          <text id="l-babbage" class="gelabel" x="250" y="230" text-anchor="middle">works on</text>
-          <text id="l-london"  class="gelabel" x="486" y="128" text-anchor="middle">runs on</text>
+          <text id="l-1" class="gelabel" x="198" y="140" text-anchor="middle">runs on</text>
+          <text id="l-2" class="gelabel" x="378" y="132" text-anchor="middle">shows</text>
+          <text id="l-3" class="gelabel" x="540" y="152" text-anchor="middle">fixed by</text>
           <!-- nodes -->
-          <g id="n-ada" class="gnode">
-            <circle cx="150" cy="95" r="8" />
-            <text x="150" y="74" text-anchor="middle">Priya</text>
+          <g id="n-portal" class="gnode">
+            <circle cx="120" cy="115" r="8" />
+            <text x="120" y="94" text-anchor="middle">Checkout Portal</text>
           </g>
-          <g id="n-engine" class="gnode">
-            <circle cx="375" cy="175" r="11" />
-            <text x="375" y="205" text-anchor="middle">Atlas project</text>
+          <g id="n-node42" class="gnode">
+            <circle cx="300" cy="180" r="8" />
+            <text x="300" y="210" text-anchor="middle">Node-42</text>
           </g>
-          <g id="n-babbage" class="gnode">
-            <circle cx="150" cy="255" r="8" />
-            <text x="150" y="278" text-anchor="middle">Arun</text>
+          <g id="n-err" class="gnode">
+            <circle cx="460" cy="110" r="8" />
+            <text x="460" y="89" text-anchor="middle">Error 808</text>
           </g>
-          <g id="n-london" class="gnode">
-            <circle cx="585" cy="100" r="8" />
-            <text x="585" y="80" text-anchor="middle">PostgreSQL</text>
+          <g id="n-fix" class="gnode">
+            <circle cx="585" cy="205" r="11" />
+            <text x="585" y="235" text-anchor="middle">flush Redis + restart</text>
           </g>
         </svg>
         <div id="demo-answer" class="demo-answer"></div>
@@ -864,7 +864,8 @@ print(recall(<span class="st">"who worked with Priya?"</span>))</pre>
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
 
   // precompute edge lengths so the "draw-in" works
-  var EDGES = ['ada', 'babbage', 'london'];
+  var EDGES = ['1', '2', '3'];
+  var NODES = ['portal', 'node42', 'err', 'fix'];
   var lens = {};
   EDGES.forEach(function (k) { lens[k] = byId('e-' + k).getTotalLength(); });
 
@@ -895,7 +896,7 @@ print(recall(<span class="st">"who worked with Priya?"</span>))</pre>
 
   function reset() {
     stage.classList.add('noanim');
-    ['ada', 'engine', 'babbage', 'london'].forEach(function (k) {
+    NODES.forEach(function (k) {
       byId('n-' + k).classList.remove('on', 'hot');
     });
     EDGES.forEach(function (k) {
@@ -912,42 +913,42 @@ print(recall(<span class="st">"who worked with Priya?"</span>))</pre>
   }
 
   function revealAll() {
-    ['ada', 'engine', 'babbage', 'london'].forEach(showNode);
+    NODES.forEach(showNode);
     EDGES.forEach(function (k) { drawEdge(k); });
   }
 
   async function loop() {
     if (reduced) {
       revealAll();
-      answerEl.innerHTML = '<span class="k">&rarr;</span> Priya &middot; Arun';
+      answerEl.innerHTML = '<span class="k">&rarr;</span> Flush the Redis cache &amp; restart Node-42';
       answerEl.classList.add('show');
       return;
     }
     while (true) {
       reset();
       await sleep(500);
-      await type('remember("Priya leads the Atlas project.")');
-      showNode('ada'); showNode('engine'); drawEdge('ada');
+      await type('remember("The Checkout Portal runs on Server Node-42.")');
+      showNode('portal'); showNode('node42'); drawEdge('1');
       await sleep(1000);
-      await type('remember("Arun works on the Atlas project.")');
-      showNode('babbage'); drawEdge('babbage');
+      await type('remember("Server Node-42 is throwing an Error 808.")');
+      showNode('err'); drawEdge('2');
       await sleep(1000);
-      await type('remember("The Atlas project runs on PostgreSQL.")');
-      showNode('london'); drawEdge('london');
+      await type('remember("To resolve Error 808, flush the Redis cache and restart the server.")');
+      showNode('fix'); drawEdge('3');
       await sleep(1200);
-      await type('recall("Who works on the project that uses PostgreSQL?")');
+      await type('recall("How do I fix the current issue with the Checkout Portal?")');
       await sleep(400);
-      hotNode('london'); hotEdge('london');
-      await sleep(450);
-      hotNode('engine');
-      await sleep(450);
-      hotEdge('ada'); hotNode('ada');
-      await sleep(350);
-      hotEdge('babbage'); hotNode('babbage');
+      hotNode('portal');
+      await sleep(400);
+      hotEdge('1'); hotNode('node42');
+      await sleep(400);
+      hotEdge('2'); hotNode('err');
+      await sleep(400);
+      hotEdge('3'); hotNode('fix');
       await sleep(500);
-      answerEl.innerHTML = '<span class="k">&rarr;</span> Priya &middot; Arun &mdash; via the Atlas project';
+      answerEl.innerHTML = '<span class="k">&rarr;</span> Flush the Redis cache &amp; restart Node-42 &mdash; via Checkout Portal &rarr; Node-42 &rarr; Error 808';
       answerEl.classList.add('show');
-      await sleep(3200);
+      await sleep(3400);
     }
   }
 
