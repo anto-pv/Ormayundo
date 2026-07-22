@@ -521,25 +521,25 @@
           <line id="e-babbage" class="gedge" x1="150" y1="255" x2="375" y2="175" />
           <line id="e-london"  class="gedge" x1="375" y1="175" x2="585" y2="100" />
           <!-- edge labels -->
-          <text id="l-ada"     class="gelabel" x="250" y="128" text-anchor="middle">wrote algorithm</text>
-          <text id="l-babbage" class="gelabel" x="250" y="230" text-anchor="middle">designed</text>
-          <text id="l-london"  class="gelabel" x="486" y="128" text-anchor="middle">built in</text>
+          <text id="l-ada"     class="gelabel" x="250" y="128" text-anchor="middle">leads</text>
+          <text id="l-babbage" class="gelabel" x="250" y="230" text-anchor="middle">works on</text>
+          <text id="l-london"  class="gelabel" x="486" y="128" text-anchor="middle">runs on</text>
           <!-- nodes -->
           <g id="n-ada" class="gnode">
             <circle cx="150" cy="95" r="8" />
-            <text x="150" y="74" text-anchor="middle">Ada Lovelace</text>
+            <text x="150" y="74" text-anchor="middle">Priya</text>
           </g>
           <g id="n-engine" class="gnode">
             <circle cx="375" cy="175" r="11" />
-            <text x="375" y="205" text-anchor="middle">Analytical Engine</text>
+            <text x="375" y="205" text-anchor="middle">Atlas project</text>
           </g>
           <g id="n-babbage" class="gnode">
             <circle cx="150" cy="255" r="8" />
-            <text x="150" y="278" text-anchor="middle">Charles Babbage</text>
+            <text x="150" y="278" text-anchor="middle">Arun</text>
           </g>
           <g id="n-london" class="gnode">
             <circle cx="585" cy="100" r="8" />
-            <text x="585" y="80" text-anchor="middle">London</text>
+            <text x="585" y="80" text-anchor="middle">PostgreSQL</text>
           </g>
         </svg>
         <div id="demo-answer" class="demo-answer"></div>
@@ -919,31 +919,33 @@ print(recall(<span class="st">"who worked with Priya?"</span>))</pre>
   async function loop() {
     if (reduced) {
       revealAll();
-      answerEl.innerHTML = '<span class="k">&rarr;</span> Ada Lovelace &middot; Charles Babbage';
+      answerEl.innerHTML = '<span class="k">&rarr;</span> Priya &middot; Arun';
       answerEl.classList.add('show');
       return;
     }
     while (true) {
       reset();
       await sleep(500);
-      await type('remember("Ada Lovelace wrote the first algorithm for the Analytical Engine.")');
+      await type('remember("Priya leads the Atlas project.")');
       showNode('ada'); showNode('engine'); drawEdge('ada');
       await sleep(1000);
-      await type('remember("Charles Babbage designed the Analytical Engine.")');
+      await type('remember("Arun works on the Atlas project.")');
       showNode('babbage'); drawEdge('babbage');
       await sleep(1000);
-      await type('remember("The Analytical Engine was built in London.")');
+      await type('remember("The Atlas project runs on PostgreSQL.")');
       showNode('london'); drawEdge('london');
       await sleep(1200);
-      await type('recall("Who worked on the Analytical Engine?")');
+      await type('recall("Who works on the project that uses PostgreSQL?")');
       await sleep(400);
+      hotNode('london'); hotEdge('london');
+      await sleep(450);
       hotNode('engine');
-      await sleep(500);
+      await sleep(450);
       hotEdge('ada'); hotNode('ada');
       await sleep(350);
       hotEdge('babbage'); hotNode('babbage');
       await sleep(500);
-      answerEl.innerHTML = '<span class="k">&rarr;</span> Ada Lovelace &middot; Charles Babbage &mdash; connected via Analytical Engine';
+      answerEl.innerHTML = '<span class="k">&rarr;</span> Priya &middot; Arun &mdash; via the Atlas project';
       answerEl.classList.add('show');
       await sleep(3200);
     }
