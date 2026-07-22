@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ormayundo": {
+      "command": "python",
+      "args": ["-m", "ormayundo.mcp_server"]
+    }
+  }
+}

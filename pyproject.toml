@@ -1,14 +1,27 @@
 [project]
 name = "ormayundo"
-version = "0.1.0"
+version = "0.1.1"
 description = "Persistent long-term memory for AI agents, backed by a self-hosted knowledge graph."
+readme = "README.md"
 requires-python = ">=3.10"
+authors = [{ name = "anto-pv" }]
+keywords = ["ai", "agents", "memory", "knowledge-graph", "mcp", "rag"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
+    "anthropic>=0.40",
     "openai>=1.40",
     "python-dotenv>=1.0",
     "sentence-transformers>=3.0",
     "mcp>=1.2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/anto-pv/Ormayundo"
+Repository = "https://github.com/anto-pv/Ormayundo"
 
 [project.scripts]
 ormayundo-mcp = "ormayundo.mcp_server:main"

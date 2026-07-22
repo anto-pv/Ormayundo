@@ -1,7 +1,14 @@
-"""remember(text): chunk -> Claude extracts triples -> embed entities -> store."""
+"""remember(text): chunk -> LLM extracts triples -> embed entities -> store."""
 import json
 
-from ..config import CHUNK_CHARS, DB_PATH, EXTRACT_MODEL, OPENAI_API_KEY
+from ..config import (
+    ANTHROPIC_API_KEY,
+    CHUNK_CHARS,
+    DB_PATH,
+    EXTRACT_MODEL,
+    LLM_PROVIDER,
+    OPENAI_API_KEY,
+)
 from .embed import embed
 from .store import Store
 
@@ -38,10 +45,37 @@ def _chunk(text, size=CHUNK_CHARS):
     return [text[i:i + size] for i in range(0, len(text), size)] or []
 
 
+def _client():
+    """Build the client for the configured provider (imported lazily so only the
+    provider actually in use needs its SDK installed)."""
+    if LLM_PROVIDER == "anthropic":
+        from anthropic import Anthropic
+        return Anthropic(api_key=ANTHROPIC_API_KEY)
+    if LLM_PROVIDER == "openai":
+        from openai import OpenAI
+        return OpenAI(api_key=OPENAI_API_KEY)
+    raise ValueError(f"LLM_PROVIDER={LLM_PROVIDER!r}; expected 'anthropic' or 'openai'.")
+
+
 def _extract_triples(chunk, client):
+    prompt = _PROMPT.format(chunk=chunk)
+    if LLM_PROVIDER == "anthropic":
+        # Force structured output via a single required tool call.
+        msg = client.messages.create(
+            model=EXTRACT_MODEL,
+            max_tokens=4096,
+            tools=[{"name": "emit_triples", "description": "Emit extracted triples.",
+                    "input_schema": _TRIPLE_SCHEMA}],
+            tool_choice={"type": "tool", "name": "emit_triples"},
+            messages=[{"role": "user", "content": prompt}],
+        )
+        for block in msg.content:
+            if block.type == "tool_use":
+                return parse_triples(block.input)
+        return []
     resp = client.chat.completions.create(
         model=EXTRACT_MODEL,
-        messages=[{"role": "user", "content": _PROMPT.format(chunk=chunk)}],
+        messages=[{"role": "user", "content": prompt}],
         response_format={
             "type": "json_schema",
             "json_schema": {"name": "triples", "strict": True, "schema": _TRIPLE_SCHEMA},
@@ -51,11 +85,15 @@ def _extract_triples(chunk, client):
 
 
 def parse_triples(raw):
-    """Defensive parse: drop anything that isn't a complete (s, r, o) triple."""
-    try:
-        data = json.loads(raw)
-    except (ValueError, TypeError):
-        return []
+    """Defensive parse: drop anything that isn't a complete (s, r, o) triple.
+    Accepts a JSON string (OpenAI) or an already-parsed dict (Anthropic tool_use)."""
+    if isinstance(raw, str):
+        try:
+            data = json.loads(raw)
+        except (ValueError, TypeError):
+            return []
+    else:
+        data = raw
     out = []
     for t in data.get("triples", []) if isinstance(data, dict) else []:
         if not isinstance(t, dict):
@@ -68,8 +106,7 @@ def parse_triples(raw):
 
 def remember(text, db_path=None):
     """Ingest text into the knowledge graph. Returns the number of triples stored."""
-    from openai import OpenAI
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    client = _client()
     store = Store(db_path or DB_PATH)
 
     all_triples = []
@@ -96,6 +133,9 @@ def demo():
     # No live API: exercise the defensive parser only.
     good = '{"triples": [{"subject": "Ada", "relation": "designed", "object": "the Engine"}]}'
     assert parse_triples(good) == [("Ada", "designed", "the Engine")]
+    # dict input (Anthropic tool_use path) parses the same as its JSON-string form
+    assert parse_triples({"triples": [{"subject": "Ada", "relation": "designed",
+                                       "object": "the Engine"}]}) == [("Ada", "designed", "the Engine")]
     # malformed / incomplete rows dropped, valid kept
     mixed = ('{"triples": ['
              '{"subject": "A", "relation": "r", "object": "B"},'

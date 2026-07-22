@@ -8,11 +8,13 @@ Registers the Ormayundo MCP server so Claude gains `remember` / `recall` tools.
    ```
    pip install ormayundo
    ```
-2. Set the one required credential (embeddings run locally — no second key):
+2. Set the LLM credential (embeddings run locally — no second key). Claude is the
+   default provider:
    ```
-   export OPENAI_API_KEY=sk-...
+   export ANTHROPIC_API_KEY=sk-ant-...
    ```
-   Or put `OPENAI_API_KEY=sk-...` in a `.env` file — it's loaded automatically.
+   To use OpenAI instead: `export LLM_PROVIDER=openai` and `export OPENAI_API_KEY=sk-...`.
+   Either key can go in a `.env` file — it's loaded automatically.
 3. Optional — override where the graph lives (default `~/.ormayundo/memory.db`):
    ```
    export ORMAYUNDO_DB=/path/to/memory.db

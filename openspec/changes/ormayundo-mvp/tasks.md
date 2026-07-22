@@ -1,8 +1,8 @@
 ## 1. Project setup
 
 - [x] 1.1 Create `ormayundo/` package with `core/` subpackage and `pyproject.toml`
-- [x] 1.2 Add dependencies: `anthropic`, `sentence-transformers` (sqlite3 is stdlib)
-- [x] 1.3 Add config: read `ANTHROPIC_API_KEY`; DB path default `~/.ormayundo/memory.db`
+- [x] 1.2 Add dependencies: `anthropic`, `openai`, `sentence-transformers` (sqlite3 is stdlib)
+- [x] 1.3 Add config: `ORMAYUNDO_LLM` selects provider; read the matching key; DB path default `~/.ormayundo/memory.db`
 
 ## 2. Store (`core/store.py`)
 
@@ -23,7 +23,7 @@
 ## 4. Ingest (`core/ingest.py`)
 
 - [x] 4.1 Implement chunking with a tunable size constant
-- [x] 4.2 Implement Claude call returning `(subject, relation, object)` triples per chunk (structured output)
+- [x] 4.2 Implement provider-agnostic LLM call (Claude tool_use / OpenAI json_schema) returning `(subject, relation, object)` triples per chunk (structured output)
 - [x] 4.3 Parse triples defensively; skip malformed/incomplete ones
 - [x] 4.4 Embed distinct entities and write nodes + edges via `store`
 - [x] 4.5 Self-check: assert triple parser drops bad rows and keeps valid ones (no live API) — PASSES
@@ -45,7 +45,7 @@
 ## 7. Claude plugin (`plugin/`)
 
 - [x] 7.1 Write plugin manifest (`.claude-plugin/plugin.json` + `.mcp.json`) registering the MCP server
-- [x] 7.2 Document `ANTHROPIC_API_KEY` and DB path config in plugin setup
+- [x] 7.2 Document `ORMAYUNDO_LLM`, provider keys, and DB path config in plugin setup
 - [ ] 7.3 Verify installing the plugin exposes `remember`/`recall` to the agent — NOT RUN (needs live Claude Code install)
 
 ## 8. Docs

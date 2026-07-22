@@ -1,8 +1,11 @@
 {
   "mcpServers": {
     "ormayundo": {
-      "command": "ormayundo-mcp",
+      "command": "uvx",
+      "args": ["--from", "ormayundo", "ormayundo-mcp"],
       "env": {
+        "LLM_PROVIDER": "${LLM_PROVIDER}",
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
         "OPENAI_API_KEY": "${OPENAI_API_KEY}"
       }
     }

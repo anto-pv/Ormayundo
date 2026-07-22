@@ -27,7 +27,7 @@ not a fork, not a feature clone. Simple and optimized: only `remember` and
 | Runtime | Python | Matches reference, best LLM/graph ecosystem |
 | Graph store | SQLite, single `.db` file | Zero infra, ships in the plugin |
 | Retrieval | Semantic + graph hop | Matches Cognee's hybrid; best recall |
-| LLM (extraction) | Claude API (`anthropic`) | — |
+| LLM (extraction) | Claude (default) or OpenAI, via `ORMAYUNDO_LLM` | Claude matches the plugin; OpenAI opt-in. Paper is model-agnostic. |
 | Embeddings | Local `sentence-transformers` (pluggable) | Zero cost, fully offline/self-hosted, no extra API key |
 
 ## Architecture

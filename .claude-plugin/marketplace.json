@@ -1,0 +1,12 @@
+{
+  "name": "ormayundo",
+  "owner": { "name": "anto-pv" },
+  "plugins": [
+    {
+      "name": "ormayundo",
+      "source": "./plugin",
+      "description": "Persistent long-term memory for AI agents via a self-hosted knowledge graph. Adds `remember` and `recall` tools.",
+      "version": "0.1.1"
+    }
+  ]
+}

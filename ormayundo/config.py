@@ -5,11 +5,17 @@ from dotenv import load_dotenv
 
 load_dotenv()  # read a local .env (walks up from cwd) into the environment
 
-# Only credential needed — embeddings run locally.
+# Which LLM extracts triples: "openai" (default) or "anthropic". `or` guards
+# against an empty passthrough value (see plugin/.mcp.json).
+LLM_PROVIDER = (os.environ.get("LLM_PROVIDER") or "openai").lower()
+
+# Credentials — only the selected provider's key is needed. Embeddings run locally.
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-# OpenAI model used for entity/relation extraction.
-EXTRACT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.5")
+# Extraction model. Defaults per provider; override with ORMAYUNDO_MODEL.
+_DEFAULT_MODEL = {"openai": "gpt-5.5", "anthropic": "claude-sonnet-5"}
+EXTRACT_MODEL = os.environ.get("ORMAYUNDO_MODEL") or _DEFAULT_MODEL.get(LLM_PROVIDER, "gpt-5.5")
 
 # Local embedding model (downloaded once by sentence-transformers).
 EMBED_MODEL = os.environ.get("ORMAYUNDO_EMBED_MODEL", "BAAI/bge-small-en-v1.5")

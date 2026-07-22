@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/Logo.jpg" alt="Ormayundo" width="420">
+  <img src="https://raw.githubusercontent.com/anto-pv/Ormayundo/main/assets/Logo.jpg" alt="Ormayundo" width="420">
 </p>
 
 <h1 align="center">Ormayundo</h1>
@@ -50,11 +50,13 @@ ingest  →  chunk  →  extract entities & relations  →  knowledge graph  →
 
 ```bash
 pip install ormayundo          # or: pip install -e .  (from a clone)
-export OPENAI_API_KEY=sk-...    # the only key needed — embeddings run locally
+export OPENAI_API_KEY=sk-...    # default provider; only the LLM key is needed
 ```
 
-Or put `OPENAI_API_KEY=sk-...` in a `.env` file at your project root — it's loaded
-automatically. First use downloads the local embedding model (`BAAI/bge-small-en-v1.5`) once.
+Extraction runs on OpenAI by default. To use Claude instead, set
+`LLM_PROVIDER=anthropic` and provide `ANTHROPIC_API_KEY`. Either key can live in a
+`.env` file at your project root — it's loaded automatically. First use downloads the
+local embedding model (`BAAI/bge-small-en-v1.5`) once (embeddings never need an API key).
 
 ## Use it as a library
 
@@ -92,8 +94,10 @@ Or install the bundled plugin in [`plugin/`](plugin/).
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `OPENAI_API_KEY` | — (required) | OpenAI API key for entity/relation extraction |
-| `OPENAI_MODEL` | `gpt-5.5` | Extraction model |
+| `LLM_PROVIDER` | `openai` | Extraction provider: `openai` or `anthropic` |
+| `OPENAI_API_KEY` | — | Required when provider is `openai` (the default) |
+| `ANTHROPIC_API_KEY` | — | Required when provider is `anthropic` |
+| `ORMAYUNDO_MODEL` | `gpt-5.5` / `claude-sonnet-5` | Extraction model (per-provider default) |
 | `ORMAYUNDO_DB` | `~/.ormayundo/memory.db` | Graph storage location |
 | `ORMAYUNDO_EMBED_MODEL` | `BAAI/bge-small-en-v1.5` | Local embedding model |
 
