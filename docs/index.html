@@ -451,6 +451,10 @@
   .gnode circle { fill: #202632; stroke: var(--line); stroke-width: 1.5; transition: fill .35s ease, filter .35s ease, stroke .35s ease; }
   .gnode.hot circle { fill: var(--accent); stroke: var(--accent); filter: drop-shadow(0 0 9px var(--accent)); }
   .gnode text { font-family: var(--sans); font-size: 12.5px; fill: var(--text); }
+  .gnode.branch circle { fill: #171c24; }
+  .gnode.branch text { fill: var(--muted-dim); font-size: 11px; }
+  .gedge.branch { stroke: var(--line-soft); }
+  .gelabel.branch { fill: #4a5160; }
 
   .demo-answer {
     position: absolute; left: 16px; right: 16px; bottom: 13px;
@@ -515,31 +519,57 @@
         <span class="pmt">&gt;&gt;&gt;</span><span id="demo-cmd"></span><span class="caret"></span>
       </div>
       <div class="demo-stage">
-        <svg id="demo-svg" viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" aria-label="Animated knowledge graph demo">
-          <!-- edges (linear chain) -->
-          <line id="e-1" class="gedge" x1="120" y1="115" x2="300" y2="180" />
-          <line id="e-2" class="gedge" x1="300" y1="180" x2="460" y2="110" />
-          <line id="e-3" class="gedge" x1="460" y1="110" x2="585" y2="205" />
+        <svg id="demo-svg" viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" aria-label="Animated knowledge graph demo">
+          <!-- edges: main path (highlighted on recall) -->
+          <line id="e-1" class="gedge" x1="110" y1="150" x2="300" y2="215" />
+          <line id="e-2" class="gedge" x1="300" y1="215" x2="505" y2="150" />
+          <line id="e-3" class="gedge" x1="505" y1="150" x2="660" y2="235" />
+          <!-- edges: context branches (stay dim) -->
+          <line id="e-team"   class="gedge branch" x1="110" y1="150" x2="100" y2="64" />
+          <line id="e-region" class="gedge branch" x1="300" y1="215" x2="250" y2="330" />
+          <line id="e-redis"  class="gedge branch" x1="300" y1="215" x2="440" y2="315" />
+          <line id="e-crit"   class="gedge branch" x1="505" y1="150" x2="520" y2="64" />
           <!-- edge labels -->
-          <text id="l-1" class="gelabel" x="198" y="140" text-anchor="middle">runs on</text>
-          <text id="l-2" class="gelabel" x="378" y="132" text-anchor="middle">shows</text>
-          <text id="l-3" class="gelabel" x="540" y="152" text-anchor="middle">fixed by</text>
-          <!-- nodes -->
+          <text id="l-1" class="gelabel" x="198" y="176" text-anchor="middle">runs on</text>
+          <text id="l-2" class="gelabel" x="405" y="176" text-anchor="middle">shows</text>
+          <text id="l-3" class="gelabel" x="588" y="187" text-anchor="middle">fixed by</text>
+          <text id="l-team"   class="gelabel branch" x="142" y="108" text-anchor="middle">owned by</text>
+          <text id="l-region" class="gelabel branch" x="246" y="282" text-anchor="middle">in us-east-1</text>
+          <text id="l-redis"  class="gelabel branch" x="392" y="272" text-anchor="middle">also runs</text>
+          <text id="l-crit"   class="gelabel branch" x="548" y="108" text-anchor="middle">severity</text>
+          <!-- nodes: main path -->
           <g id="n-portal" class="gnode">
-            <circle cx="120" cy="115" r="8" />
-            <text x="120" y="94" text-anchor="middle">Checkout Portal</text>
+            <circle cx="110" cy="150" r="8" />
+            <text x="110" y="131" text-anchor="middle">Checkout Portal</text>
           </g>
           <g id="n-node42" class="gnode">
-            <circle cx="300" cy="180" r="8" />
-            <text x="300" y="210" text-anchor="middle">Node-42</text>
+            <circle cx="300" cy="215" r="9" />
+            <text x="300" y="245" text-anchor="middle">Node-42</text>
           </g>
           <g id="n-err" class="gnode">
-            <circle cx="460" cy="110" r="8" />
-            <text x="460" y="89" text-anchor="middle">Error 808</text>
+            <circle cx="505" cy="150" r="8" />
+            <text x="505" y="131" text-anchor="middle">Error 808</text>
           </g>
           <g id="n-fix" class="gnode">
-            <circle cx="585" cy="205" r="11" />
-            <text x="585" y="235" text-anchor="middle">flush Redis + restart</text>
+            <circle cx="660" cy="235" r="11" />
+            <text x="660" y="265" text-anchor="middle">flush Redis + restart</text>
+          </g>
+          <!-- nodes: context branches -->
+          <g id="n-team" class="gnode branch">
+            <circle cx="100" cy="64" r="6" />
+            <text x="100" y="48" text-anchor="middle">Payments team</text>
+          </g>
+          <g id="n-region" class="gnode branch">
+            <circle cx="250" cy="330" r="6" />
+            <text x="250" y="352" text-anchor="middle">us-east-1</text>
+          </g>
+          <g id="n-redis" class="gnode branch">
+            <circle cx="440" cy="315" r="6" />
+            <text x="440" y="337" text-anchor="middle">Redis cache</text>
+          </g>
+          <g id="n-crit" class="gnode branch">
+            <circle cx="520" cy="64" r="6" />
+            <text x="520" y="48" text-anchor="middle">Critical</text>
           </g>
         </svg>
         <div id="demo-answer" class="demo-answer"></div>
@@ -864,10 +894,12 @@ print(recall(<span class="st">"who worked with Priya?"</span>))</pre>
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
 
   // precompute edge lengths so the "draw-in" works
-  var EDGES = ['1', '2', '3'];
-  var NODES = ['portal', 'node42', 'err', 'fix'];
+  var EDGES = ['1', '2', '3'];                          // main path (highlighted on recall)
+  var BRANCHES = ['team', 'region', 'redis', 'crit'];   // context branches (stay dim)
+  var ALL_EDGES = EDGES.concat(BRANCHES);
+  var NODES = ['portal', 'node42', 'err', 'fix', 'team', 'region', 'redis', 'crit'];
   var lens = {};
-  EDGES.forEach(function (k) { lens[k] = byId('e-' + k).getTotalLength(); });
+  ALL_EDGES.forEach(function (k) { lens[k] = byId('e-' + k).getTotalLength(); });
 
   function showNode(k) { byId('n-' + k).classList.add('on'); }
   function drawEdge(k) {
@@ -899,7 +931,7 @@ print(recall(<span class="st">"who worked with Priya?"</span>))</pre>
     NODES.forEach(function (k) {
       byId('n-' + k).classList.remove('on', 'hot');
     });
-    EDGES.forEach(function (k) {
+    ALL_EDGES.forEach(function (k) {
       var line = byId('e-' + k);
       line.classList.remove('hot');
       line.style.opacity = '0';
@@ -914,7 +946,7 @@ print(recall(<span class="st">"who worked with Priya?"</span>))</pre>
 
   function revealAll() {
     NODES.forEach(showNode);
-    EDGES.forEach(function (k) { drawEdge(k); });
+    ALL_EDGES.forEach(function (k) { drawEdge(k); });
   }
 
   async function loop() {
@@ -927,15 +959,19 @@ print(recall(<span class="st">"who worked with Priya?"</span>))</pre>
     while (true) {
       reset();
       await sleep(500);
-      await type('remember("The Checkout Portal runs on Server Node-42.")');
+      await type('remember("The Checkout Portal runs on Server Node-42, owned by the Payments team.")');
       showNode('portal'); showNode('node42'); drawEdge('1');
-      await sleep(1000);
-      await type('remember("Server Node-42 is throwing an Error 808.")');
+      showNode('team'); drawEdge('team');
+      showNode('region'); drawEdge('region');
+      await sleep(1100);
+      await type('remember("Server Node-42 (Redis-backed) is throwing a critical Error 808.")');
       showNode('err'); drawEdge('2');
-      await sleep(1000);
+      showNode('redis'); drawEdge('redis');
+      showNode('crit'); drawEdge('crit');
+      await sleep(1100);
       await type('remember("To resolve Error 808, flush the Redis cache and restart the server.")');
       showNode('fix'); drawEdge('3');
-      await sleep(1200);
+      await sleep(1300);
       await type('recall("How do I fix the current issue with the Checkout Portal?")');
       await sleep(400);
       hotNode('portal');
